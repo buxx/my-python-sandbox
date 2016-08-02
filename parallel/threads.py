@@ -35,8 +35,8 @@ if MODE == 'T':
         thread.join()
 
 elif MODE == 'S':
-    job(shared_data, 0, results)
-    job(shared_data, 1, results)
+    for i in range(THREADS):
+        job(shared_data, i, results)
 
 
 print(results)
