@@ -1,9 +1,8 @@
-from threading import Thread
-
 import sys
+from multiprocessing import Process, Manager
 
 THREADS = int(sys.argv[2])
-DATA = 6000
+DATA = 10000
 MODE = sys.argv[1]
 
 
@@ -14,29 +13,37 @@ def job(shared_data, index, results):
     compute3 = ['foo' for i in range(compute2)]
     results[index] = len(compute3)
 
-shared_data = {}
-results = {}
+if __name__ == '__main__':
+    shared_data = {}
+    results = {}
 
-current = 0
-for i in range(THREADS):
-    shared_data[i] = [current+i for i in range(DATA)]
+    current = 0
 
-if MODE == 'T':
-    threads = []
+    if MODE == 'T':
+        with Manager() as manager:
+            shared_data = manager.dict()
+            results = manager.dict()
 
-    for i in range(THREADS):
-        threads.append(Thread(target=job, args=(shared_data, i, results)))
-        current = len(shared_data[i])
+            for i in range(THREADS):
+                shared_data[i] = [current+j for j in range(DATA)]
 
-    for thread in threads:
-        thread.start()
+            threads = []
 
-    for thread in threads:
-        thread.join()
+            for i in range(THREADS):
+                threads.append(Process(target=job, args=(shared_data, i, results)))
 
-elif MODE == 'S':
-    for i in range(THREADS):
-        job(shared_data, i, results)
+            for thread in threads:
+                thread.start()
 
+            for thread in threads:
+                thread.join()
 
-print(results)
+            results = results.items()
+    elif MODE == 'S':
+        for i in range(THREADS):
+            shared_data[i] = [current+j for j in range(DATA)]
+
+        for i in range(THREADS):
+            job(shared_data, i, results)
+
+    print(results)
