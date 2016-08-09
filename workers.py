@@ -28,6 +28,8 @@ parser.add_argument(
     '-r', '--random', type=int, help='Random seed int', required=False, default=10)
 parser.add_argument(
     '-v', '--verbose', help='Verbose', action='store_true', default=False)
+parser.add_argument(
+    '-p', '--print-result', help='Print result', action='store_true', default=False)
 
 args = parser.parse_args()
 
@@ -38,6 +40,7 @@ DATA_SIZE = args.data
 CYCLES = args.iterations
 KEEP = args.keep
 VERBOSE = args.verbose
+RESULT = args.print_result
 random.seed(42)
 
 CYCLES_LENGTH = len(str(CYCLES))
@@ -232,3 +235,6 @@ if __name__ == '__main__':
         print('EXECUTION TIME: {0}s'.format(
             '{:6.6f}'.format(global_elapsed_time),
         ))
+    else:
+        if RESULT:
+            print('{:6.6f}'.format(global_elapsed_time))
