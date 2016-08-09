@@ -83,7 +83,7 @@ def get_shared_var(shared, data_count, workers_count):
         return data
 
     else:
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 def get_result_var(shared):
@@ -94,7 +94,7 @@ def get_result_var(shared):
         return manager.dict()
 
     else:
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 def make_job(shared_data, index, results, cycle_number):
@@ -213,7 +213,7 @@ if __name__ == '__main__':
         results = results.items()
 
     else:
-        raise NotImplemented()
+        raise NotImplementedError()
 
     global_elapsed_time = time.time() - global_start_time
 
