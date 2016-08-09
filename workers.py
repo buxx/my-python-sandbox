@@ -119,7 +119,7 @@ def make_job(shared_data, index, results, cycle_number):
         ))
 
 
-def make_job_keeper(target, start_conn, recv_conn, shared_data, worker_number):
+def make_job_keeper(target, start_conn, recv_conn, worker_number):
     iteration_number = -1
     while True:
         iteration_number += 1
@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
                 p = Process(
                     target=make_job_keeper,
-                    args=(make_job, start_child_conn, recv_child_conn, shared_data, worker_number)
+                    args=(make_job, start_child_conn, recv_child_conn, worker_number)
                 )
                 p.start()
                 processes.append(p)
