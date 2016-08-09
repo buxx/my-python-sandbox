@@ -43,6 +43,12 @@ random.seed(42)
 CYCLES_LENGTH = len(str(CYCLES))
 CYCLE_FORMAT = '{:' + str(CYCLES_LENGTH) + '}'
 
+if KEEP and MODE != 'Process':
+    raise NotImplementedError('You can\t use KEEP for {0} MODE'.format(MODE))
+
+if SHARED != 'manager' and MODE == 'Process':
+    raise NotImplementedError('You must use manager SHARED for {0} MODE'.format(MODE))
+
 if VERBOSE:
 
     print('''BENCHMARK CONFIGURATION:
@@ -59,9 +65,7 @@ if VERBOSE:
         cycles=CYCLES,
     ))
 
-    if KEEP and MODE != 'Process':
-        raise NotImplementedError('You can\t use KEEP for {0} MODE'.format(MODE))
-    else:
+    if MODE == 'Process':
         print('* KEEP: {0}'.format(
             'True' if KEEP else 'False'
         ))
@@ -154,6 +158,8 @@ if __name__ == '__main__':
                     process.join()
 
                 shared_data = get_shared_var(SHARED, DATA_SIZE, WORKERS)
+
+            results = dict(results)
         else:
             processes = []
             start_pipes = []
@@ -221,7 +227,7 @@ if __name__ == '__main__':
         print('')
         print('''RESULTS:''')
         for worker_number in range(WORKERS):
-            print('* WORKER {0}: {1}'.format(worker_number, results[worker_number]))
+            print('* WORKER {0}: {1}'.format(worker_number, dict(results).get(worker_number)))
         print('')
         print('EXECUTION TIME: {0}s'.format(
             '{:6.6f}'.format(global_elapsed_time),
