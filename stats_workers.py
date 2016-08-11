@@ -56,7 +56,12 @@ for strategy_name, strategy in strategies.items():
             strategy_name,
             context_name,
         ), end='', flush=True)
-        print('{0} ({1})'.format(
-            os.popen(exec_).read().rstrip(),
+
+        execution_seconds = float(os.popen(exec_).read().rstrip())
+        seconds_per_cycle = execution_seconds / cycles
+
+        print('{0}:{1}/cycle ({2})'.format(
+            execution_seconds,
+            '{:6.9f}'.format(seconds_per_cycle),
             exec_,
         ))
