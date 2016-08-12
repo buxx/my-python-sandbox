@@ -1,7 +1,16 @@
+import argparse
+import json
 import os
 from collections import OrderedDict
 
-print('''Stratégies:
+parser = argparse.ArgumentParser(description='')
+
+parser.add_argument(
+    '-o', '--output', type=str, help='build html stats', required=False, default='')
+
+args = parser.parse_args()
+
+DOC = '''Stratégies:
 A. 1 worker avec dict
 B. 4 Threads avec dict
 C. 4 Threads avec Manager
@@ -13,7 +22,9 @@ Contextes:
 2. 1000 data, 200 cycles
 3. 100 data, 1000 cycles
 4. 50 data, 5000 cycles
-5. 10 data, 10000 cycles''')
+5. 10 data, 10000 cycles'''
+
+print(DOC)
 
 print('')
 
@@ -35,9 +46,11 @@ contexts = OrderedDict([
     ('5', (10, 10000)),
 ])
 
-for strategy_name, strategy in strategies.items():
-    for context_name, context in contexts.items():
+stats = []
 
+for context_name, context in contexts.items():
+    context_stats = {'y': '{0}'.format(context_name)}
+    for strategy_name, strategy in strategies.items():
         mode = strategy[0]
         shared = strategy[1]
         data = context[0]
@@ -59,9 +72,43 @@ for strategy_name, strategy in strategies.items():
 
         execution_seconds = float(os.popen(exec_).read().rstrip())
         seconds_per_cycle = execution_seconds / cycles
+        context_stats['{0}'.format(strategy_name)] = seconds_per_cycle
 
         print('{0}:{1}/cycle ({2})'.format(
             execution_seconds,
             '{:6.9f}'.format(seconds_per_cycle),
             exec_,
         ))
+    stats.append(context_stats)
+
+if args.output:
+    with open(args.output, 'w+') as file:
+        print('''
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+          <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+          <script src="http://cdn.oesmith.co.uk/morris-0.4.1.min.js"></script>
+          <meta charset=utf-8 />
+          <title>Workers</title>
+        </head>
+        <body>
+
+            <pre>'''+DOC+'''</pre>
+
+          <div id="js_stats"></div>
+
+          <script>
+            Morris.Line({
+              element: 'js_stats',
+              data: '''+json.dumps(stats)+''',
+              xkey: 'y',
+              ykeys: '''+json.dumps(['{0}'.format(s) for s in list(strategies.keys())])+''',
+              labels: '''+json.dumps(['Strategy {0}'.format(s) for s in list(strategies.keys())])+'''
+            });
+        </script>
+
+        </body>
+        </html>
+        ''', file=file)
