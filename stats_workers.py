@@ -54,7 +54,7 @@ contexts = OrderedDict(contexts_list)
 stats = []
 
 for context_name, context in contexts.items():
-    context_stats = {'y': '{0}'.format(context_name)}
+    context_stats = {'y': '{0}'.format(context[0])}
     for strategy_name, strategy in strategies.items():
         mode = strategy[0]
         shared = strategy[1]
