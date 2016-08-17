@@ -16,13 +16,7 @@ B. 4 Threads avec dict
 C. 4 Threads avec Manager
 D. 4 Process avec Manager
 E. 4 Process avec Manager, processus daemons
-
-Contextes:
-1. 10000 data, 20 cycles
-2. 1000 data, 200 cycles
-3. 100 data, 1000 cycles
-4. 50 data, 5000 cycles
-5. 10 data, 10000 cycles'''
+'''
 
 print(DOC)
 
@@ -38,14 +32,25 @@ strategies = OrderedDict([
     ('E', ('Process', 'manager', '--keep')),
 ])
 
-contexts = OrderedDict([
-    ('1', (10000, 20)),
-    ('2', (1000, 200)),
-    ('3', (100, 1000)),
-    ('4', (50, 5000)),
-    ('5', (10, 10000)),
-])
+data_start = 2000
+int_name = 1
+contexts_list = []
+while data_start >= 1:
+    contexts_list.append(
+        (str(int_name), (data_start, 100))
+    )
+    int_name += 1
+    data_start -= 100
 
+# contexts = OrderedDict([
+#     ('1', (10000, 20)),
+#     ('2', (1000, 200)),
+#     ('3', (100, 1000)),
+#     ('4', (50, 5000)),
+#     ('5', (10, 10000)),
+# ])
+
+contexts = OrderedDict(contexts_list)
 stats = []
 
 for context_name, context in contexts.items():
